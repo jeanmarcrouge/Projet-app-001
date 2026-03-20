@@ -4,7 +4,7 @@ import { ActivityTable, ActivityRow } from "@/components/dashboard/ActivityTable
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ItemForm, DashboardItem } from "@/components/dashboard/ItemForm";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { getSessionUser, UserSession } from "@/utils/auth";
+import { useSessionUser } from "@/utils/useSessionUser";
 
 const defaultRows: ActivityRow[] = [
   {
@@ -34,18 +34,15 @@ const initialItems: DashboardItem[] = [
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserSession | null>(null);
+  const user = useSessionUser();
   const [items, setItems] = useState<DashboardItem[]>(initialItems);
   const [editingItem, setEditingItem] = useState<DashboardItem | null>(null);
 
   useEffect(() => {
-    const sessionUser = getSessionUser();
-    if (!sessionUser) {
+    if (!user) {
       void router.replace("/login");
-      return;
     }
-    setUser(sessionUser);
-  }, [router]);
+  }, [router, user]);
 
   const stats = useMemo(
     () => [
@@ -112,6 +109,7 @@ export default function DashboardPage() {
         </div>
 
         <ItemForm
+          key={editingItem?.id ?? "new-item"}
           selectedItem={editingItem}
           onSave={handleSaveItem}
           onCancelEdit={() => setEditingItem(null)}

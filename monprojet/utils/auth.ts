@@ -6,6 +6,7 @@ export type UserSession = {
 };
 
 const SESSION_KEY = "saas_session_user";
+export const SESSION_CHANGE_EVENT = "saas-session-change";
 
 function safeReadStorage(): UserSession | null {
   if (typeof window === "undefined") {
@@ -31,6 +32,7 @@ export function getSessionUser(): UserSession | null {
 function persistSession(user: UserSession): void {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    window.dispatchEvent(new Event(SESSION_CHANGE_EVENT));
   }
 }
 
@@ -85,5 +87,6 @@ export function updateSessionProfile(name: string, email: string): UserSession |
 export function logout(): void {
   if (typeof window !== "undefined") {
     window.localStorage.removeItem(SESSION_KEY);
+    window.dispatchEvent(new Event(SESSION_CHANGE_EVENT));
   }
 }

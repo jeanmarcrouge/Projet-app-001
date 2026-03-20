@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 
 type DashboardItem = {
   id: string;
@@ -13,19 +13,8 @@ type ItemFormProps = {
 };
 
 export function ItemForm({ selectedItem, onSave, onCancelEdit }: ItemFormProps) {
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-
-  useEffect(() => {
-    if (selectedItem) {
-      setName(selectedItem.name);
-      setType(selectedItem.type);
-      return;
-    }
-
-    setName("");
-    setType("");
-  }, [selectedItem]);
+  const [name, setName] = useState(selectedItem?.name ?? "");
+  const [type, setType] = useState(selectedItem?.type ?? "");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

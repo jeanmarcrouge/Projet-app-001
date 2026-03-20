@@ -1,35 +1,33 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { getSessionUser, updateSessionProfile, UserSession } from "@/utils/auth";
+import { updateSessionProfile } from "@/utils/auth";
+import { useSessionUser } from "@/utils/useSessionUser";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserSession | null>(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const user = useSessionUser();
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const sessionUser = getSessionUser();
-    if (!sessionUser) {
+    if (!user) {
       void router.replace("/login");
-      return;
     }
-    setUser(sessionUser);
-    setName(sessionUser.name);
-    setEmail(sessionUser.email);
-  }, [router]);
+  }, [router, user]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!name.trim() || !email.trim()) {
+
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+
+    if (!name || !email) {
       return;
     }
 
-    const updated = updateSessionProfile(name.trim(), email.trim());
+    const updated = updateSessionProfile(name, email);
     if (updated) {
-      setUser(updated);
       setSaved(true);
     }
   }
@@ -56,9 +54,9 @@ export default function ProfilePage() {
             Name
           </label>
           <input
+            name="name"
             type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
+            defaultValue={user.name}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none ring-cyan-400/30 transition focus:ring"
           />
         </div>
@@ -68,9 +66,9 @@ export default function ProfilePage() {
             Email
           </label>
           <input
+            name="email"
             type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            defaultValue={user.email}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none ring-cyan-400/30 transition focus:ring"
           />
         </div>

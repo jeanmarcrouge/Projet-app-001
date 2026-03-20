@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { getSessionUser, UserSession } from "@/utils/auth";
+import { useSessionUser } from "@/utils/useSessionUser";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserSession | null>(null);
+  const user = useSessionUser();
   const [notifications, setNotifications] = useState(true);
 
   useEffect(() => {
-    const sessionUser = getSessionUser();
-    if (!sessionUser) {
+    if (!user) {
       void router.replace("/login");
-      return;
     }
-    setUser(sessionUser);
-  }, [router]);
+  }, [router, user]);
 
   if (!user) {
     return (
