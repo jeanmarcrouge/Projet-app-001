@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
 import { clearSessionUser, getSessionUser, saveSessionUser, SessionUser } from "./auth";
 
 type AuthContextValue = {
@@ -16,11 +16,7 @@ type AuthProviderProps = {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<SessionUser | null>(null);
-
-  useEffect(() => {
-    setUser(getSessionUser());
-  }, []);
+  const [user, setUser] = useState<SessionUser | null>(() => getSessionUser());
 
   const value = useMemo<AuthContextValue>(
     () => ({

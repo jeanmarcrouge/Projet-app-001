@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/utils/AuthContext";
 import { useRequireAuth } from "@/utils/useRequireAuth";
@@ -6,19 +6,16 @@ import { useRequireAuth } from "@/utils/useRequireAuth";
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
   const { isChecking } = useRequireAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [nameDraft, setNameDraft] = useState<string | undefined>(undefined);
+  const [emailDraft, setEmailDraft] = useState<string | undefined>(undefined);
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    setName(user.name);
-    setEmail(user.email);
-  }, [user]);
 
   if (isChecking) {
     return <p className="p-6 text-sm text-slate-300">Loading profile...</p>;
   }
+
+  const name = nameDraft ?? user?.name ?? "";
+  const email = emailDraft ?? user?.email ?? "";
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,7 +35,7 @@ export default function ProfilePage() {
             <span className="mb-1 block text-sm text-slate-200">Full name</span>
             <input
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => setNameDraft(event.target.value)}
               className="w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none ring-cyan-300 transition focus:ring-2"
             />
           </label>
@@ -48,7 +45,7 @@ export default function ProfilePage() {
             <input
               type="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => setEmailDraft(event.target.value)}
               className="w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none ring-cyan-300 transition focus:ring-2"
             />
           </label>
